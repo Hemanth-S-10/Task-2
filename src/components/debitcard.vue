@@ -14,12 +14,14 @@
 			<div style="float:left;width:50%">
 					<h5>EXPIRY</h5>
 					<ul>
-							<el-input  style="width:20%"  v-model="dc.expiry" v-cardformat:formatCardExpiry />&emsp;													
+							<el-input  style="width:20%" @focus="handleexpiry()"  v-model="dc.expiry" v-cardformat:formatCardExpiry />&emsp;													
 					</ul>
+                    <p v-if="expiryerror">Invalid expiry date</p>
 			</div>
 			<div style="float:left;width:50%">
 					<h5>CVV NUMBER</h5>													
-					<el-input type="password" style="width:20%" v-model="dc.cvv" placeholder="xxx" v-cardformat:formatCardCVC required=""/>
+					<el-input type="password" @focus="handlecvv()" style="width:20%" v-model="dc.cvv" placeholder="xxx" v-cardformat:formatCardCVC required=""/>
+                    <p v-if="cvverror">Invalid CVV</p>
 			</div>
 		</div>
 		<div>
@@ -40,30 +42,31 @@ export default {
 	data(){
 		return {
             dc:{name:'',no:'',cvv:'',expiry:'',save:true},
-            cardErrors:{},
+            expiryerror:false,
+            cvverror:false,
             $cardFormat:Vue.prototype.$cardFormat
 		}
 		},
 		methods:{
         print(){
-
-          
-          this.cardErrors = {};
-          
-          // validate card number
-          if(!this.$cardFormat.validateCardNumber(this.dc.no)){
-            alert("Invalid Credit Card Number.")
-
-          // validate card expiry
           if (!this.$cardFormat.validateCardExpiry(this.dc.expiry)) {
-            alert("Invalid Expiration Date.")
+            this.expiryerror=true
+            
 
-          // validate card CVC
+          
           if (!this.$cardFormat.validateCardCVC(this.dc.cvv)) {
-            alert("Invalid CVV.")
-          console.log(this.dc)
-
-        }}}}
+			this.cvverror=true
+		
+		console.log(this.dc)
+		this.$router.push('/success')
+          }}
+		},
+		handlecvv(){
+			this.cvverror=false
+		},
+		handleexpiry(){
+			this.expiryerror=false
+		}
 	}
 }
 
